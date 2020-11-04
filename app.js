@@ -1,27 +1,27 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const cookieParser = require('cookie-parser');
-const express = require('express');
-const favicon = require('serve-favicon');
-const logger = require('morgan');
-const path = require('path');
-const createError = require('http-errors');
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const favicon = require("serve-favicon");
+const logger = require("morgan");
+const path = require("path");
+const createError = require("http-errors");
 
 // require all the packages you install
-// ... here
+// Test Commit!
 
 const app = express();
 
 // Middleware Setup
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // require database configuration
-require('./configs/db.config');
+require("./configs/db.config");
 
 // require CORS (Cross-Origin Resource Sharing)
 // ... here
@@ -33,7 +33,7 @@ require('./configs/db.config');
 // ... here
 
 // routes middleware
-app.use('/', require('./routes/index.routes'));
+app.use("/", require("./routes/index.routes"));
 
 // Catch missing routes and forward to error handler
 app.use((req, res, next) => {
@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 // Catch all error handler
 app.use((error, req, res, next) => {
   res.status(error.status || 500);
-  res.json({ type: 'error', error: { message: error.message } });
+  res.json({ type: "error", error: { message: error.message } });
 });
 
 module.exports = app;
