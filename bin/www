@@ -1,35 +1,35 @@
 #!/usr/bin/env node
 
-const http = require('http');
-const app = require('../app');
+const http = require("http");
+const app = require("../app");
 
 // catch 404 and send a not-found message
-app.use((_, res) => res.status(404).json('not-found'));
+app.use((_, res) => res.status(404).json("not-found"));
 
 app.use((err, req, res) => {
   // always log the error
-  console.error('ERROR', req.method, req.path, err);
+  console.error("ERROR", req.method, req.path, err);
 
   // only send if the error ocurred before sending the response
   if (!res.headersSent) {
-    res.status(500).json('error');
+    res.status(500).json("error");
   }
 });
 
 const server = http.createServer(app);
 
-server.on('error', error => {
-  if (error.syscall !== 'listen') {
+server.on("error", (error) => {
+  if (error.syscall !== "listen") {
     throw error;
   }
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
+    case "EACCES":
       console.error(`Port ${process.env.PORT} requires elevated privileges`);
       process.exit(1);
       break;
-    case 'EADDRINUSE':
+    case "EADDRINUSE":
       console.error(`Port ${process.env.PORT} is already in use`);
       process.exit(1);
       break;
@@ -38,4 +38,6 @@ server.on('error', error => {
   }
 });
 
-server.listen(process.env.PORT, () => console.log(`Listening on http://localhost:${process.env.PORT}`));
+server.listen(process.env.PORT, () =>
+  console.log(`Listening on http://localhost:${process.env.PORT}`)
+);
