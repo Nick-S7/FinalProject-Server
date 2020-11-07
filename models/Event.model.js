@@ -7,10 +7,10 @@ const eventSchema = new Schema(
     // firstName: {type: String, require: true}
     name: String,
     location: String,
-    price: String,
+    price: Number,
     date: Date,
     image: String,
-    comments: { type: Schema.Types.ObjectId, ref: "Comment" },
+    comments: { type: Schema.Types.ObjectId, ref: "Comment", default: [] },
     creator: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
