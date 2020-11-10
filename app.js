@@ -26,7 +26,8 @@ require("./configs/db.config");
 // require CORS (Cross-Origin Resource Sharing)
 app.use(
   cors({
-    origin: [process.env.FRONTEND_POINT],
+    // origin: [process.env.FRONTEND_POINT],
+    origin: "*",
     credentials: true, // this needs set up on the frontend side as well
     //                   in axios "withCredentials: true"
   })
@@ -43,6 +44,7 @@ app.use("/", require("./routes/index.routes"));
 app.use("/", require("./routes/authentication.routes"));
 app.use("/", require("./routes/event.routes"));
 app.use("/", require("./routes/comment.routes"));
+app.use("/", require("./routes/fileUpload.routes"));
 
 // Catch missing routes and forward to error handler
 app.use((req, res, next) => {
