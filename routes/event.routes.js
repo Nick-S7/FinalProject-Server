@@ -39,9 +39,27 @@ eventRouter.get("/api/events", (req, res, next) => {
 //GET Event Details
 
 eventRouter.get("/api/events/:id", (req, res, next) => {
-  Event.findById(req.params.id)
+  // console.log(req.params.id);
+  const eventId = req.params.id;
+  Event.findById(eventId)
     .then((eventFromDB) => {
+      //if this event is not listed, create the event in the DB.
+      if (eventFromDB === null) {
+        console.log("This event is not in the DB", eventId);
+        Event.create({ _id: eventId })
+          //after creating the event, change the MongoDB id to the id from the API. This will support logic to distinguish between user-created events with the MongoDB id of 20 characters, and the API events with an API id 14 characters.
+          .then((newEventFromDb) => {
+            newEventFromDb._id = eventId;
+            console.log(newEventFromDb._id);
+          })
+          .catch((err) =>
+            res
+              .status(400)
+              .json({ message: "error updating event ID in DB:", err })
+          );
+      }
       res.status(200).json({ event: eventFromDB });
+      console.log({ eventFromDb });
     })
     .catch((err) => res.status(400).json({ message: err }));
 });

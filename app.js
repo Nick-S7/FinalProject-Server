@@ -26,8 +26,8 @@ require("./configs/db.config");
 // require CORS (Cross-Origin Resource Sharing)
 app.use(
   cors({
-    // origin: [process.env.FRONTEND_POINT],
-    origin: "*",
+    origin: [process.env.FRONTEND_POINT],
+    // origin: "*",
     credentials: true, // this needs set up on the frontend side as well
     //                   in axios "withCredentials: true"
   })
