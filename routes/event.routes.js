@@ -3,6 +3,7 @@
 
 const express = require("express");
 const eventRouter = express.Router();
+const uploadCloud = require("../configs/cloudinary-setup");
 
 // ********* require Event model in order to use it for CRUD *********
 const Event = require("../models/Event.model");
@@ -12,11 +13,18 @@ const Event = require("../models/Event.model");
 // ****************************************************************************************
 
 // <form action="/event" method="POST">
-eventRouter.post("/api/events", (req, res, next) => {
-  Event.create(req.body)
-    .then((createdEvent) => res.status(200).json({ event: createdEvent }))
-    .catch((err) => next(err));
-});
+eventRouter.post(
+  "/api/events/create",
+  uploadCloud.single("image"),
+  (req, res, next) => {
+    console.log({ file: req.file });
+    const eventInfo = req.body;
+    eventInfo.image = req.file.path;
+    Event.create(eventInfo)
+      .then((createdEvent) => res.status(200).json({ event: createdEvent }))
+      .catch((err) => res.status(400).json({ message: err }));
+  }
+);
 
 // ****************************************************************************************
 // GET all events from the DB
@@ -28,6 +36,16 @@ eventRouter.get("/api/events", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+//GET Event Details
+
+eventRouter.get("/api/events/:id", (req, res, next) => {
+  Event.findById(req.params.id)
+    .then((eventFromDB) => {
+      res.status(200).json({ event: eventFromDB });
+    })
+    .catch((err) => res.status(400).json({ message: err }));
+});
+
 // ****************************************************************************************
 // POST route to save the updates
 // ****************************************************************************************
@@ -36,7 +54,7 @@ eventRouter.get("/api/events", (req, res, next) => {
 eventRouter.post("/api/events/:id/update", (req, res) => {
   Event.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((updatedEvent) => res.status(200).json({ event: updatedEvent }))
-    .catch((err) => next(err));
+    .catch((err) => res.status(400).json({ message: err }));
 });
 
 // ****************************************************************************************
@@ -47,7 +65,7 @@ eventRouter.post("/api/events/:id/update", (req, res) => {
 eventRouter.post("/api/events/:eventId/delete", (req, res) => {
   Event.findByIdAndRemove(req.params.eventId)
     .then(() => res.json({ message: "Successfully removed!" }))
-    .catch((err) => next(err));
+    .catch((err) => res.status(400).json({ message: err }));
 });
 
 module.exports = eventRouter;
