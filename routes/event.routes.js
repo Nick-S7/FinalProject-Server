@@ -22,7 +22,11 @@ eventRouter.post(
     eventInfo.image = req.file.path;
     Event.create(eventInfo)
       .then((createdEvent) => res.status(200).json({ event: createdEvent }))
-      .catch((err) => res.status(400).json({ message: err }));
+      .catch((err) =>
+        res
+          .status(400)
+          .json({ message: "an error ocurred creating event: ", err })
+      );
   }
 );
 
