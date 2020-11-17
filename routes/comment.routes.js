@@ -52,13 +52,13 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
                     .json({ event: updatedEvent })
                     .catch((err) =>
                       console.log(
-                        `Err while saving a comment in a event: ${err}`
+                        `Err while saving a comment in an event: ${err}`
                       )
                     )
                 );
               })
               .catch((err) =>
-                console.log(`Err while creating a comment on a event: ${err}`)
+                console.log(`Err while creating a comment in an event: ${err}`)
               );
           })
           .catch((err) =>
