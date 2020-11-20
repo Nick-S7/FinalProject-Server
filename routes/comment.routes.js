@@ -15,7 +15,7 @@ const Comment = require("../models/Comment.model");
 
 // event route - to save to database a new comment on a specific event
 router.post("/api/events/:eventId/comment", (req, res, next) => {
-  const eId = req.params.eventId;
+  const eId = req.params._id;
   const { content } = req.body;
 
   // 1. find an event based on the id from the url
@@ -34,10 +34,11 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
           .then((newEventFromDb) => {
             Comment.create({
               content,
-              author: req.user,
+              author: req.user.username,
             })
               .then((newCommentFromDb) => {
                 // Update the event with new comments to the database
+                console.log(req.user);
                 Event.findByIdAndUpdate(
                   newEventFromDb.eventId,
                   {
@@ -68,7 +69,7 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
         console.log("got here");
         Comment.create({
           content,
-          author: req.user,
+          author: req.user.username,
         })
           .then((newCommentFromDb) => {
             // Update the event with new comments to the database

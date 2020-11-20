@@ -20,9 +20,10 @@ eventRouter.post(
     console.log({ file: req.file });
     console.log("is user logged into backend?", req.user);
     const eventInfo = req.body;
-    eventInfo.creator = req.user._id;
+    eventInfo.creator = req.user.username;
     eventInfo.image = req.file.path;
     console.log(eventInfo);
+    console.log(eventInfo.creator);
     Event.create(eventInfo)
       .then((createdEvent) => res.status(200).json({ event: createdEvent }))
       .catch((err) =>

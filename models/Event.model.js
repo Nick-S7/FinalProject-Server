@@ -15,7 +15,7 @@ const eventSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
       default: [],
     },
-    creator: { type: Schema.Types.ObjectId, ref: "User" },
+    creator: { type: String },
   },
   {
     // keeps record when is created and updated
