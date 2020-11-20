@@ -18,8 +18,11 @@ eventRouter.post(
   uploadCloud.single("image"),
   (req, res, next) => {
     console.log({ file: req.file });
+    console.log("is user logged into backend?", req.user);
     const eventInfo = req.body;
+    eventInfo.creator = req.user._id;
     eventInfo.image = req.file.path;
+    console.log(eventInfo);
     Event.create(eventInfo)
       .then((createdEvent) => res.status(200).json({ event: createdEvent }))
       .catch((err) =>

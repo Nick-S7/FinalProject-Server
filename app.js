@@ -27,6 +27,8 @@ require("./configs/db.config");
 app.use(
   cors({
     //origin: [process.env.FRONTEND_POINT],
+
+    //update origin to array specify frontend-backend points
     origin: true,
     credentials: true, // this needs set up on the frontend side as well
     //                   in axios "withCredentials: true"
