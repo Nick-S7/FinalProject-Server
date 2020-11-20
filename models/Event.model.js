@@ -11,7 +11,10 @@ const eventSchema = new Schema(
     date: Date,
     image: { type: String },
     imageArray: { type: [String] },
-    comments: { type: Schema.Types.ObjectId, ref: "Comment", default: [] },
+    comments: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+      default: [],
+    },
     creator: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
