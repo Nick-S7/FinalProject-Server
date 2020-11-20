@@ -20,6 +20,7 @@ eventRouter.post(
     console.log({ file: req.file });
     const eventInfo = req.body;
     eventInfo.image = req.file.path;
+    console.log(eventInfo);
     Event.create(eventInfo)
       .then((createdEvent) => res.status(200).json({ event: createdEvent }))
       .catch((err) =>
