@@ -101,7 +101,7 @@ router.post("/api/login", (req, res, next) => {
 
 //LOGOUT
 
-router.post("/api/logout", routeGuard, (req, res, next) => {
+router.post("/api/logout", (req, res, next) => {
   req.logout();
   res.status(200).json({ message: "Logout successful!" });
 });
