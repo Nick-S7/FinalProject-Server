@@ -48,16 +48,12 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
                   },
                   { new: true }
                 ).then((updatedEvent) =>
-                  res
-                    .status(200)
-                    .json({ event: updatedEvent })
-                    .catch((err) =>
-                      console.log(
-                        `Err while saving a comment in an event: ${err}`
-                      )
-                    )
+                  res.status(200).json({ event: updatedEvent })
                 );
               })
+              .catch((err) =>
+                console.log(`Err while saving a comment in an event: ${err}`)
+              )
               .catch((err) =>
                 console.log(`Err while creating a comment in an event: ${err}`)
               );
