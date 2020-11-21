@@ -122,8 +122,11 @@ router.get("/api/isLoggedIn", (req, res) => {
 
 //.post() profile route ==> to process updated profile data
 router.post("/api/edit-profile", (req, res, next) => {
-  const { proposedUser, proposedEmail } = req.body;
-
+  console.log("got here");
+  const { username: proposedUser, email: proposedEmail } = req.body;
+  // const  = username;
+  // const  = email;
+  console.log(proposedEmail, proposedUser);
   //check to make sure at least one field is filled out
   if (!proposedUser && !proposedEmail) {
     res.status(400).json({
@@ -136,7 +139,7 @@ router.post("/api/edit-profile", (req, res, next) => {
   if (proposedUser) {
     // console.log(proposedUser);
     User.findByIdAndUpdate(
-      req.session.loggedInUser._id,
+      req.user._id,
       {
         username: proposedUser,
       },
@@ -146,10 +149,11 @@ router.post("/api/edit-profile", (req, res, next) => {
     )
       .then((updatedUser) => {
         console.log(`username updated: ${updatedUser}`);
-        // res.redirect('/profile');
+        res.status(200).json({ user: updatedUser });
       })
       .catch((err) => {
         //check that username is unique:
+        console.log({ err });
         if (err.code === 11000) {
           res.status(500).json({
             message:
@@ -163,7 +167,7 @@ router.post("/api/edit-profile", (req, res, next) => {
   if (proposedEmail) {
     // console.log(proposedEmail);
     User.findByIdAndUpdate(
-      req.session.loggedInUser._id,
+      req.user._id,
       {
         email: proposedEmail,
       },
@@ -171,11 +175,13 @@ router.post("/api/edit-profile", (req, res, next) => {
         new: true,
       }
     )
-      .then((updatedEmail) => {
-        console.log(`user email updated: ${updatedEmail}`);
-        // res.redirect('/profile');
+      .then((updatedUser) => {
+        console.log(`user email updated: ${updatedUser}`);
+        res.status(200).json({ user: updatedUser });
       })
       .catch((err) => {
+        console.log({ err });
+
         //check that email is unique:
         if (err.code === 11000) {
           res.status(500).json({
