@@ -74,11 +74,15 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
           .then((newCommentFromDb) => {
             // Update the event with new comments to the database
             console.log({ newCommentFromDb });
-            Event.findByIdAndUpdate(eventFromDb._id, {
-              $push: {
-                comments: newCommentFromDb._id,
+            Event.findByIdAndUpdate(
+              eventFromDb._id,
+              {
+                $push: {
+                  comments: newCommentFromDb._id,
+                },
               },
-            }).then((updatedEvent) =>
+              { new: true }
+            ).then((updatedEvent) =>
               res
                 .status(200)
                 .json({ event: updatedEvent })
@@ -103,13 +107,26 @@ router.post("/api/events/:eventId/comment", (req, res, next) => {
 // // GET route to get all the comments in any event
 // // ****************************************************************************************
 
-router.get("/api/events/:eventId/comments", (req, res) => {
+router.get("/api/events/:eventId/comments", (req, res, next) => {
   Comment.find()
     .then((commentsFromDB) =>
       res.status(200).json({ comments: commentsFromDB })
     )
     .catch((err) => next(err));
 });
+
+router.post(
+  "/api/events/:eventId/comments/:commentId/delete",
+  (req, res, next) => {
+    const { eventId, commentId } = req.params;
+    Comment.findByIdAndRemove(commentId)
+      .then((commentDeletedResponse) => {
+        res.status(200).json({ message: commentDeletedResponse });
+        Event.findByIdAndUpdate(eventId, { $pull: { comments: commentId } });
+      })
+      .catch((err) => next(err));
+  }
+);
 
 // router.post("/api/books", (req, res, next) => {
 //   console.log(req.body);
