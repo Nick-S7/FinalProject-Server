@@ -122,10 +122,10 @@ router.get("/api/isLoggedIn", (req, res) => {
 
 //.post() profile route ==> to process updated profile data
 router.post("/api/edit-profile", (req, res, next) => {
-  const { proposedUser, proposedEmail, proposedPassword } = req.body;
+  const { proposedUser, proposedEmail } = req.body;
 
   //check to make sure at least one field is filled out
-  if (!proposedUser && !proposedEmail && !proposedPassword) {
+  if (!proposedUser && !proposedEmail) {
     res.status(400).json({
       message:
         "Please update at least one field to save changes to your profile.",
@@ -187,46 +187,46 @@ router.post("/api/edit-profile", (req, res, next) => {
   }
 
   //if password was updated:
-  if (proposedPassword) {
-    // console.log(proposedPassword);
-    // make sure passwords are strong:
-    if (!regex.test(proposedPassword)) {
-      res.status(500).json({
-        message:
-          "New password needs to have at least 6 chars and must contain at least one number, one lowercase and one uppercase letter.",
-      });
-      return;
-    }
-    //hash the new password:
-    bcryptjs
-      .genSalt(saltRounds)
-      .then((salt) => bcryptjs.hash(proposedPassword, salt))
-      //update the user with the new password
-      .then((hashedPassword) => {
-        User.findByIdAndUpdate(
-          req.session.loggedInUser._id,
-          {
-            password: hashedPassword,
-          },
-          {
-            new: true,
-          }
-        );
-      })
-      .then((updatedUser) => {
-        console.log("user password has been updated.");
-        // res.redirect('/profile');
-      })
-      .catch((error) => {
-        if (error instanceof mongoose.Error.ValidationError) {
-          res.status(500).json({
-            message: error.message,
-          });
-        } else {
-          next(error);
-        }
-      });
-  }
+  // if (proposedPassword) {
+  //   // console.log(proposedPassword);
+  //   // make sure passwords are strong:
+  //   if (!regex.test(proposedPassword)) {
+  //     res.status(500).json({
+  //       message:
+  //         "New password needs to have at least 6 chars and must contain at least one number, one lowercase and one uppercase letter.",
+  //     });
+  //     return;
+  //   }
+  //   //hash the new password:
+  //   bcryptjs
+  //     .genSalt(saltRounds)
+  //     .then((salt) => bcryptjs.hash(proposedPassword, salt))
+  //     //update the user with the new password
+  //     .then((hashedPassword) => {
+  //       User.findByIdAndUpdate(
+  //         req.session.loggedInUser._id,
+  //         {
+  //           password: hashedPassword,
+  //         },
+  //         {
+  //           new: true,
+  //         }
+  //       );
+  //     })
+  //     .then((updatedUser) => {
+  //       console.log("user password has been updated.");
+  //       // res.redirect('/profile');
+  //     })
+  //     .catch((error) => {
+  //       if (error instanceof mongoose.Error.ValidationError) {
+  //         res.status(500).json({
+  //           message: error.message,
+  //         });
+  //       } else {
+  //         next(error);
+  //       }
+  //     });
+  // }
 });
 
 module.exports = router;

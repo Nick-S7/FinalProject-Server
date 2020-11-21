@@ -69,7 +69,9 @@ eventRouter.get("/api/events/:id", (req, res, next) => {
       res.status(200).json({ event: eventFromDB });
       console.log({ eventFromDb });
     })
-    .catch((err) => res.status(400).json({ message: err }));
+    .catch((err) =>
+      res.status(400).json({ message: "error finding event by id: ", err })
+    );
 });
 
 // ****************************************************************************************
