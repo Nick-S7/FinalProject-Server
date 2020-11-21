@@ -15,7 +15,7 @@ const Comment = require("../models/Comment.model");
 
 // event route - to save to database a new comment on a specific event
 router.post("/api/events/:eventId/comment", (req, res, next) => {
-  const eId = req.params._id;
+  const eId = req.params.eventId;
   const { content } = req.body;
 
   // 1. find an event based on the id from the url
