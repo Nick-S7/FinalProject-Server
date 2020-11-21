@@ -15,6 +15,7 @@ const eventSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
       default: [],
     },
+    id: String,
     creator: { type: String },
   },
   {

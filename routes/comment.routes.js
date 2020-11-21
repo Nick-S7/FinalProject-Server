@@ -1,9 +1,9 @@
 // ROUTES FILE NEEDS TO BE REQUIRED IN THE APP.JS IN ORDER NOT TO GIVE 404
 // APP NEEDS TO KNOW YOU CREATED A NEW ROUTE FILE,
 // THAT'S THE ONLY WAY FOR IT TO KNOW WHICH ROUTES YOU WANT TO HIT
-
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 // ********* require Event and Comment models in order to use them *********
 const Event = require("../models/Event.model");
@@ -14,89 +14,111 @@ const Comment = require("../models/Comment.model");
 // ****************************************************************************************
 
 // event route - to save to database a new comment on a specific event
-router.post("/api/events/:eventId/comment", (req, res, next) => {
-  const eId = req.params.eventId;
-  const { content } = req.body;
+router.post("/api/events/:eventId/comment", async (req, res, next) => {
+  try {
+    const { content } = req.body;
 
-  // 1. find an event based on the id from the url
-  Event.findById(eId)
-    .then((eventFromDb) => {
-      console.log(req.user);
-      // console.log(eventId);
-      // Check if the event is already in our Db, if not, we need to create it
-      if (eventFromDb === null) {
-        console.log("No event with this ID", eId);
-        console.log(req.params);
-        //Create a record of the event with the id in the Db
-        Event.create({
-          eId,
-        })
-          .then((newEventFromDb) => {
-            Comment.create({
-              content,
-              author: req.user.username,
-            })
-              .then((newCommentFromDb) => {
-                // Update the event with new comments to the database
-                console.log(req.user);
-                Event.findByIdAndUpdate(
-                  newEventFromDb.eventId,
-                  {
-                    $push: {
-                      comments: newCommentFromDb._id,
-                    },
-                  },
-                  { new: true }
-                ).then((updatedEvent) =>
-                  res.status(200).json({ event: updatedEvent })
-                );
-              })
-              .catch((err) =>
-                console.log(`Err while saving a comment in an event: ${err}`)
-              )
-              .catch((err) =>
-                console.log(`Err while creating a comment in an event: ${err}`)
-              );
-          })
-          .catch((err) =>
-            console.log(`Err while creating a new event: ${err}`)
-          );
-      } else {
-        console.log("got here");
-        Comment.create({
-          content,
-          author: req.user.username,
-        })
-          .then((newCommentFromDb) => {
-            // Update the event with new comments to the database
-            console.log({ newCommentFromDb });
-            Event.findByIdAndUpdate(
-              eventFromDb._id,
-              {
-                $push: {
-                  comments: newCommentFromDb._id,
-                },
-              },
-              { new: true }
-            ).then((updatedEvent) =>
-              res
-                .status(200)
-                .json({ event: updatedEvent })
-                .catch((err) =>
-                  console.log(`Err while saving a comment in a event: ${err}`)
-                )
-            );
-          })
-          .catch((err) =>
-            console.log(`Err while creating a comment on a event: ${err}`)
-          );
-      }
-    })
-    .catch((err) =>
-      console.log(
-        `Err while getting a single event when creating a comment: ${err}`
-      )
+    const comment = await Comment.create({
+      content,
+      author: req.user.username,
+    });
+    console.log({ comment });
+    const event = await Event.findOneAndUpdate(
+      { id: req.params.eventId },
+      { $push: { comments: mongoose.Types.ObjectId(comment._id) } },
+      { new: true, upsert: true }
     );
+
+    await Comment.findByIdAndUpdate(
+      comment._id,
+      { event: event._id },
+      { new: true }
+    );
+
+    res.status(200).json({ event });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+
+  // // 1. find an event based on the id from the url
+  // Event.findById(eId)
+  //   .then((eventFromDb) => {
+  //     console.log(req.user);
+  //     // Check if the event is already in our Db, if not, we need to create it
+  //     if (eventFromDb === null) {
+  //       console.log("No event with this ID", eId);
+  //       console.log(req.params);
+  //       //Create a record of the event with the id in the Db
+  //       Event.create({
+  //         eId,
+  //       })
+  //         .then((newEventFromDb) => {
+  //           Comment.create({
+  //             content,
+  //             author: req.user.username,
+  //           })
+  //             .then((newCommentFromDb) => {
+  //               // Update the event with new comments to the database
+  //               console.log(req.user);
+  //               Event.findByIdAndUpdate(
+  //                 newEventFromDb.eventId,
+  //                 {
+  //                   $push: {
+  //                     comments: newCommentFromDb._id,
+  //                   },
+  //                 },
+  //                 { new: true }
+  //               ).then((updatedEvent) =>
+  //                 res.status(200).json({ event: updatedEvent })
+  //               );
+  //             })
+  //             .catch((err) =>
+  //               console.log(`Err while saving a comment in an event: ${err}`)
+  //             )
+  //             .catch((err) =>
+  //               console.log(`Err while creating a comment in an event: ${err}`)
+  //             );
+  //         })
+  //         .catch((err) =>
+  //           console.log(`Err while creating a new event: ${err}`)
+  //         );
+  //     } else {
+  //       console.log("got here");
+  //       Comment.create({
+  //         content,
+  //         author: req.user.username,
+  //       })
+  //         .then((newCommentFromDb) => {
+  //           // Update the event with new comments to the database
+  //           console.log({ newCommentFromDb });
+  //           Event.findByIdAndUpdate(
+  //             eventFromDb._id,
+  //             {
+  //               $push: {
+  //                 comments: newCommentFromDb._id,
+  //               },
+  //             },
+  //             { new: true }
+  //           ).then((updatedEvent) =>
+  //             res
+  //               .status(200)
+  //               .json({ event: updatedEvent })
+  //               .catch((err) =>
+  //                 console.log(`Err while saving a comment in a event: ${err}`)
+  //               )
+  //           );
+  //         })
+  //         .catch((err) =>
+  //           console.log(`Err while creating a comment on a event: ${err}`)
+  //         );
+  //     }
+  //   })
+  //   .catch((err) =>
+  //     console.log(
+  //       `Err while getting a single event when creating a comment: ${err}`
+  //     )
+  //   );
 });
 
 // // ****************************************************************************************
